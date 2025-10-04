@@ -13,25 +13,12 @@ database:
 liquibase:
   changelog: db/changelog/db.changelog-master.yaml
 
-
-#  kafka:
-#    schema.registry.url:
-#      - "SCHEMA_REGISTRY_URL"
-#    common:
-#      bootstrap.servers:
-#        - "BOOTSTRAP_SERVERS"
-#      # Additional attributes
-#    admin:
-#    # Additional attributes
-#    consumer:
-#      group.id: "my-group-id"
-#      # Additional attributes
-#    producer:
-#      client.id: "my-client-id"
-#      # Additional attributes
-#    topics:
-#      - name: my-topic
-#        partitions: 1
-#        configs:
-#          message.timestamp.type: CreateTime
-#          # Additional attributes
+  kafka:
+    bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      clientId: book-service-producer
+      acks: all
+      retries: 3
+    topics:
+      bookEvents: "book-events"
+      authorEvents: "author-events"
