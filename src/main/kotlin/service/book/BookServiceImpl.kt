@@ -1,11 +1,14 @@
 package ru.clevertec.service.book
 
 import dto.book.BooksFilterDto
+import dto.page.PageRequest
+import dto.page.PageResponse
 import mapper.BookMapper
 import model.entity.BookEntity
 import ru.clevertec.dto.book.BookResponse
 import ru.clevertec.dto.book.CreateBookRequest
 import ru.clevertec.dto.book.UpdateBookRequest
+import ru.clevertec.exception.EntityNotFoundException
 import ru.clevertec.repository.book.BookRepository
 
 class BookServiceImpl(private val repository: BookRepository) : BookService {
@@ -15,26 +18,42 @@ class BookServiceImpl(private val repository: BookRepository) : BookService {
         repository.create(entity)
     }
 
-    override fun getBooks(page: Int, size: Int): List<BookResponse> {
-        val offset = (page - 1) * size
-        return repository.findAll(offset, size)
+    override fun getBooks(pageRequest: PageRequest): PageResponse<BookResponse> {
+        val (books, total) = repository.findAll(pageRequest)
+        return PageResponse(
+            content = books,
+            page = pageRequest.page,
+            size = pageRequest.size,
+            totalElements = total
+        )
     }
 
+    override fun getBook(id: Int): BookResponse =
+        repository.findById(id) ?: throw EntityNotFoundException("Book with id=$id not found")
 
-    override fun getBook(id: Int): BookResponse? = repository.findById(id)
-
-    override fun getBookByIsbn(isbn: String): BookResponse? = repository.findByIsbn(isbn)
+    override fun getBookByIsbn(isbn: String): BookResponse =
+        repository.findByIsbn(isbn) ?: throw EntityNotFoundException("Book with isbn=$isbn not found")
 
     override fun updateBook(id: Int, req: UpdateBookRequest): BookResponse? {
         return repository.update(id) { BookMapper.updateEntity(this, req) }
             ?.let(BookMapper::toResponse)
     }
 
-    override fun deleteBook(id: Int): Boolean = repository.softDelete(id)
+    override fun deleteBook(id: Int) {
+        val exists = repository.softDelete(id)
+        if (!exists) {
+            throw EntityNotFoundException("Book with id=$id not found")
+        }
+    }
 
-    override fun searchBooks(filter: BooksFilterDto, page: Int, size: Int): List<BookResponse> {
-        val offset = (page - 1) * size
-        return repository.search(filter, offset, size)
+    override fun searchBooks(filter: BooksFilterDto, pageRequest: PageRequest): PageResponse<BookResponse> {
+        val (books, total) = repository.findAll(pageRequest)
+        return PageResponse(
+            content = books,
+            page = pageRequest.page,
+            size = pageRequest.size,
+            totalElements = total
+        )
     }
 
     override fun getRecommendations(id: Int): List<BookResponse> {
