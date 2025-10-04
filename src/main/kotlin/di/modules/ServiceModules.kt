@@ -12,7 +12,7 @@ import service.author.AuthorService
 import service.genre.GenreService
 
 val serviceModule = DI.Module("serviceModule") {
-    bind<BookService>() with singleton { BookServiceImpl(instance()) }
+    bind<BookService>() with singleton { BookServiceImpl(instance(), instance(), instance()) }
     bind<AuthorService>() with singleton { AuthorServiceImpl(instance(), instance()) }
     bind<GenreService>() with singleton { GenreServiceImpl(instance(), instance()) }
 }

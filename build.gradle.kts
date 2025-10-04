@@ -26,7 +26,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("org.postgresql:postgresql:$postgres_version")
     implementation("org.liquibase:liquibase-core:5.0.0")
-    //implementation("io.github.flaxoos:ktor-server-kafka:2.2.1")
+    implementation("org.apache.kafka:kafka-clients:3.7.0")
     implementation("com.zaxxer:HikariCP:7.0.2")
     implementation("io.ktor:ktor-client-core")
     implementation("io.ktor:ktor-server-status-pages")
