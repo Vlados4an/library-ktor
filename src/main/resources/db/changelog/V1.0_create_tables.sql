@@ -1,22 +1,22 @@
-CREATE TABLE author
+CREATE TABLE IF NOT EXISTS author
 (
-    id         SERIAL PRIMARY KEY,
+    author_id         SERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name  VARCHAR(100) NOT NULL,
     biography  TEXT,
     birth_date DATE
 );
 
-CREATE TABLE genre
+CREATE TABLE IF NOT EXISTS genre
 (
-    id          SERIAL PRIMARY KEY,
+    genre_id          SERIAL PRIMARY KEY,
     name        VARCHAR(100) NOT NULL,
     description TEXT
 );
 
-CREATE TABLE book
+CREATE TABLE IF NOT EXISTS book
 (
-    id             SERIAL PRIMARY KEY,
+    book_id             SERIAL PRIMARY KEY,
     isbn           VARCHAR(50)  NOT NULL,
     title          VARCHAR(255) NOT NULL,
     description    TEXT,
@@ -24,6 +24,7 @@ CREATE TABLE book
     author_id      INT          NOT NULL,
     published_year INT,
     page_count     INT,
+    year           INT,
     language       VARCHAR(50)  NOT NULL,
     cover_url      VARCHAR(500),
     is_deleted     BOOLEAN DEFAULT FALSE,
@@ -32,8 +33,8 @@ CREATE TABLE book
 );
 
 ALTER TABLE book
-    ADD CONSTRAINT fk_book_genre FOREIGN KEY (genre_id) REFERENCES genre (id);
+    ADD CONSTRAINT fk_book_genre FOREIGN KEY (genre_id) REFERENCES genre (genre_id);
 
 ALTER TABLE book
-    ADD CONSTRAINT fk_book_author FOREIGN KEY (author_id) REFERENCES author (id);
+    ADD CONSTRAINT fk_book_author FOREIGN KEY (author_id) REFERENCES author (author_id);
 

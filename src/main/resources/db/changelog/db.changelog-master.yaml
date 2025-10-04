@@ -1,4 +1,7 @@
 databaseChangeLog:
   - include:
-      file: V1.0_create-tables.sql
+      file: V1.0_create_tables.sql
+      relativeToChangelogFile: true
+  - include:
+      file: V1.1_insert_test_data.sql
       relativeToChangelogFile: true

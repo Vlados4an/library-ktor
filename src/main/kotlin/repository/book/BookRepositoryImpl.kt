@@ -1,6 +1,11 @@
 package ru.clevertec.repository.book
 
+import dto.book.BooksFilterDto
+import mapper.BookMapper
 import model.entity.BookEntity
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.clevertec.dto.book.BookResponse
 import ru.clevertec.model.table.Books
@@ -11,24 +16,24 @@ class BookRepositoryImpl : BookRepository {
         BookEntity.Companion.new { book(this) }
     }
 
-    override fun findAll(offset: Int, limit: Int): List<BookEntity> = transaction {
-        BookEntity.Companion.all().limit(limit).offset(offset.toLong()).toList()
+    override fun findAll(offset: Int, limit: Int): List<BookResponse> = transaction {
+        BookEntity.all().limit(limit).offset(offset.toLong()).map(BookMapper::toResponse)
     }
 
-    override fun findById(id: Int): BookEntity? = transaction {
-        BookEntity.Companion.findById(id)
+    override fun findById(id: Int): BookResponse? = transaction {
+        BookEntity.findById(id)?.let(BookMapper::toResponse)
     }
 
-    override fun findByIsbn(isbn: String): BookEntity? = transaction {
-        BookEntity.Companion.find { Books.isbn eq isbn }.singleOrNull()
+    override fun findByIsbn(isbn: String): BookResponse? = transaction {
+        BookEntity.find { Books.isbn eq isbn }.singleOrNull()?.let(BookMapper::toResponse)
     }
 
-    override fun findByAuthorId(authorId: Int): List<BookEntity> = transaction {
-        BookEntity.Companion.find { Books.author eq authorId }.toList()
+    override fun findByAuthorId(authorId: Int): List<BookResponse> = transaction {
+        BookEntity.find { Books.author eq authorId }.map(BookMapper::toResponse)
     }
 
-    override fun findByGenreId(genreId: Int): List<BookEntity> = transaction {
-        BookEntity.Companion.find { Books.genre eq genreId }.toList()
+    override fun findByGenreId(genreId: Int): List<BookResponse> = transaction {
+        BookEntity.find { Books.genre eq genreId }.map(BookMapper::toResponse)
     }
 
     override fun update(id: Int, block: BookEntity.() -> Unit): BookEntity? = transaction {
@@ -41,16 +46,16 @@ class BookRepositoryImpl : BookRepository {
         } != null
     }
 
-    override fun search(filter: BooksFilterDto, offset: Int, limit: Int): List<BookEntity> = transaction {
+    override fun search(filter: BooksFilterDto, offset: Int, limit: Int): List<BookResponse> = transaction {
         val conditions = mutableListOf<SqlExpressionBuilder.() -> Op<Boolean>>()
 
         filter.title?.let { t ->
             conditions += { Books.title like "%$t%" }
         }
-        filter.author?.let { a ->
+        filter.authorId?.let { a ->
             conditions += { Books.author eq a }
         }
-        filter.genre?.let { g ->
+        filter.genreId?.let { g ->
             conditions += { Books.genre eq g }
         }
         filter.language?.let { l ->
@@ -71,6 +76,6 @@ class BookRepositoryImpl : BookRepository {
         } else {
             BookEntity.find { conditions.map { it(SqlExpressionBuilder) }.reduce { acc, op -> acc and op } }
         }
-        query.limit(limit).offset(offset.toLong()).toList()
+        query.limit(limit).offset(offset.toLong()).toList().map(BookMapper::toResponse)
     }
 }

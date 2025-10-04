@@ -1,6 +1,7 @@
 package ru.clevertec
 
 import config.configureDatabase
+import config.configureSerialization
 import io.ktor.server.application.*
 import ru.clevertec.config.configureDependencies
 import ru.clevertec.config.configureExceptions
@@ -17,4 +18,5 @@ fun Application.module() {
     configureDependencies()
     configureRouting()
     configureExceptions()
+    configureSerialization()
 }

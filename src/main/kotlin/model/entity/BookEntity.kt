@@ -20,4 +20,5 @@ class BookEntity(id: EntityID<Int>) : IntEntity(id) {
     var isDeleted by Books.isDeleted
     var createdAt by Books.createdAt
     var updatedAt by Books.updatedAt
+    var year by Books.year
 }
