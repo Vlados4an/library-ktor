@@ -3,7 +3,6 @@ package ru.clevertec.service.author
 import dto.author.AuthorResponse
 import dto.author.CreateAuthorRequest
 import mapper.AuthorMapper
-import mapper.BookMapper
 import repository.author.AuthorRepository
 import ru.clevertec.dto.book.BookResponse
 import ru.clevertec.repository.book.BookRepository
