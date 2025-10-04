@@ -21,11 +21,9 @@ class AuthorServiceImpl(
     override fun getAuthors(page: Int, size: Int): List<AuthorResponse> {
         val offset = (page - 1) * size
         return authorRepository.findAll(offset, size)
-            .map(AuthorMapper::toResponse)
     }
 
     override fun getBooksByAuthor(authorId: Int): List<BookResponse> {
         return bookRepository.findByAuthorId(authorId)
-            .map(BookMapper::toResponse)
     }
 }

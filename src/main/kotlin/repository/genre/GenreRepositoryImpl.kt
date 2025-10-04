@@ -1,5 +1,7 @@
 package ru.clevertec.repository.genre
 
+import dto.genre.GenreResponse
+import mapper.GenreMapper
 import model.entity.GenreEntity
 import org.jetbrains.exposed.sql.transactions.transaction
 import repository.genre.GenreRepository
@@ -9,7 +11,7 @@ class GenreRepositoryImpl : GenreRepository {
         GenreEntity.new { genre(this) }
     }
 
-    override fun findAll(offset: Int, limit: Int): List<GenreEntity> = transaction {
-        GenreEntity.all().limit(limit).offset(offset.toLong()).toList()
+    override fun findAll(offset: Int, limit: Int): List<GenreResponse> = transaction {
+        GenreEntity.all().limit(limit).offset(offset.toLong()).toList().map(GenreMapper::toResponse)
     }
 }
