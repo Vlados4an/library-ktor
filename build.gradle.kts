@@ -32,6 +32,7 @@ dependencies {
     implementation("io.ktor:ktor-server-status-pages")
     implementation("org.kodein.di:kodein-di:7.28.0")
     implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:7.28.0")
+    implementation("org.valiktor:valiktor-core:0.12.0")
     implementation("io.ktor:ktor-server-netty")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-server-config-yaml")
