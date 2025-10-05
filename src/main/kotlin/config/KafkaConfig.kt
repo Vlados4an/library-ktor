@@ -18,17 +18,16 @@ data class KafkaConfig(
 }
 
 fun ApplicationConfig.getKafkaConfig(): KafkaConfig {
-    val kafka = config("kafka")
     return KafkaConfig(
-        bootstrapServers = kafka.property("bootstrapServers").getString(),
+        bootstrapServers = property("kafka.bootstrapServers").getString(),
         producer = KafkaConfig.ProducerConfig(
-            clientId = kafka.property("producer.clientId").getString(),
-            acks = kafka.property("producer.acks").getString(),
-            retries = kafka.property("producer.retries").getString().toInt()
+            clientId = property("kafka.producer.clientId").getString(),
+            acks = property("kafka.producer.acks").getString(),
+            retries = property("kafka.producer.retries").getString().toInt(),
         ),
         topics = KafkaConfig.Topics(
-            bookEvents = kafka.property("topics.bookEvents").getString(),
-            authorEvents = kafka.property("topics.authorEvents").getString()
+            bookEvents = property("kafka.topics.bookEvents").getString(),
+            authorEvents = property("kafka.topics.authorEvents").getString()
         )
     )
 }

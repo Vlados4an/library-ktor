@@ -4,21 +4,28 @@ ktor:
       - ru.clevertec.ApplicationKt.module
   deployment:
     port: 8080
+
 database:
   url: jdbc:postgresql://localhost:5435/questionnaire-api
   user: admin
   password: pass
   driver: org.postgresql.Driver
   maxPoolSize: 10
+
 liquibase:
   changelog: db/changelog/db.changelog-master.yaml
 
-  kafka:
-    bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-    producer:
-      clientId: book-service-producer
-      acks: all
-      retries: 3
-    topics:
-      bookEvents: "book-events"
-      authorEvents: "author-events"
+kafka:
+  bootstrapServers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+  producer:
+    clientId: book-service-producer
+    acks: all
+    retries: 3
+    requestTimeout: 30000
+    deliveryTimeout: 120000
+  topics:
+    bookEvents: "book-events"
+    authorEvents: "author-events"
+
+
+
