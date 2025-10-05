@@ -15,6 +15,7 @@ sealed class BookEvent {
         override val timestamp: Long = System.currentTimeMillis(),
         val isbn: String,
         val title: String,
+        val type: String = "BOOK_CREATED",
         val authorId: Int
     ) : BookEvent()
 
@@ -23,6 +24,7 @@ sealed class BookEvent {
     data class Updated(
         override val bookId: Int,
         override val timestamp: Long = System.currentTimeMillis(),
+        val type: String = "BOOK_UPDATED",
         val changes: Map<String, String>
     ) : BookEvent()
 
@@ -30,6 +32,7 @@ sealed class BookEvent {
     @SerialName("BOOK_DELETED")
     data class Deleted(
         override val bookId: Int,
-        override val timestamp: Long = System.currentTimeMillis()
+        override val timestamp: Long = System.currentTimeMillis(),
+        val type: String = "BOOK_DELETED",
     ) : BookEvent()
 }

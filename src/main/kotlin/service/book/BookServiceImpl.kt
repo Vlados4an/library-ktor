@@ -11,7 +11,7 @@ import ru.clevertec.dto.book.CreateBookRequest
 import ru.clevertec.dto.book.UpdateBookRequest
 import ru.clevertec.dto.kafka.BookEvent
 import ru.clevertec.exception.EntityNotFoundException
-import ru.clevertec.kafka.consumer.KafkaProducerService
+import ru.clevertec.kafka.producer.KafkaProducerService
 import ru.clevertec.repository.book.BookRepository
 
 class BookServiceImpl(private val repository: BookRepository, private val kafkaProducerService: KafkaProducerService, private val kafkaConfig: KafkaConfig) :

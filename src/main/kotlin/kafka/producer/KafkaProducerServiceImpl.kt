@@ -1,4 +1,4 @@
-package kafka.consumer
+package ru.clevertec.kafka.producer
 
 import KafkaConfig
 import kotlinx.coroutines.Dispatchers
@@ -10,8 +10,7 @@ import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
 import org.slf4j.LoggerFactory
-import ru.clevertec.kafka.consumer.KafkaProducerService
-import java.util.Properties
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class KafkaProducerServiceImpl(private val config: KafkaConfig) : KafkaProducerService {
