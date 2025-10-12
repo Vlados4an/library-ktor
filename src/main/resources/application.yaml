@@ -6,7 +6,7 @@ ktor:
     port: 8080
 
 database:
-  url: jdbc:postgresql://localhost:5435/questionnaire-api
+  url: jdbc:postgresql://localhost:5432/book-api
   user: admin
   password: pass
   driver: org.postgresql.Driver
