@@ -26,6 +26,9 @@ kafka:
   topics:
     bookEvents: "book-events"
     authorEvents: "author-events"
+jwt:
+  issuer: "library-service"
+  secret: "your-secret-key-change-in-production"
 
 
 
