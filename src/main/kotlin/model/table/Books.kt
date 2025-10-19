@@ -16,7 +16,6 @@ object Books : IntIdTable(name = "book", columnName = "book_id") {
     val language = varchar("language", 50)
     val coverUrl = varchar("cover_url", 500).nullable()
     val isDeleted = bool("is_deleted").default(false)
-    val year = integer("year").nullable()
     val createdAt = timestamp("created_at").defaultExpression(CurrentTimestamp)
     val updatedAt = timestamp("updated_at").defaultExpression(CurrentTimestamp)
 }

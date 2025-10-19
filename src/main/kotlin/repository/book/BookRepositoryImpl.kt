@@ -65,12 +65,6 @@ class BookRepositoryImpl : BookRepository {
         filter.language?.let { l ->
             conditions += { Books.language eq l }
         }
-        filter.yearFrom?.let { yf ->
-            conditions += { Books.year greaterEq yf }
-        }
-        filter.yearTo?.let { yt ->
-            conditions += { Books.year lessEq yt }
-        }
         filter.hasCover?.let { hc ->
             conditions += { if (hc) Books.coverUrl.isNotNull() else Books.coverUrl.isNull() }
         }

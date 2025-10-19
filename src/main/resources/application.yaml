@@ -1,5 +1,6 @@
 ktor:
   application:
+    name: "library-service"
     modules:
       - ru.clevertec.ApplicationKt.module
   deployment:
