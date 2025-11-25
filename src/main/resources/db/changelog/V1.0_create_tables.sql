@@ -24,12 +24,11 @@ CREATE TABLE IF NOT EXISTS book
     author_id      INT          NOT NULL,
     published_year INT,
     page_count     INT,
-    year           INT,
     language       VARCHAR(50)  NOT NULL,
     cover_url      VARCHAR(500),
     is_deleted     BOOLEAN DEFAULT FALSE,
-    created_at     TIMESTAMP,
-    updated_at     TIMESTAMP
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE book

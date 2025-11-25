@@ -1,0 +1,119 @@
+version: '3'
+services:
+  zookeeper:
+    image: zookeeper
+    ports:
+      - "2181:2181"
+
+  kafka:
+    hostname: kafka
+    container_name: library-kafka
+    image: confluentinc/cp-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_BROKER_ID=1
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    depends_on:
+      - zookeeper
+
+  # Postgres для book-service
+  postgres-book:
+    image: postgres:latest
+    container_name: postgres-book-service
+    hostname: postgres-book
+    environment:
+      POSTGRES_DB: "book-api"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "pass"
+    ports:
+      - "5432:5432"
+
+  # Postgres для user-service
+  postgres-user:
+    image: postgres:latest
+    container_name: postgres-user-service
+    hostname: postgres-user
+    environment:
+      POSTGRES_DB: "user-api"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "pass"
+    ports:
+      - "5433:5432"
+
+  # Postgres для tracking-service
+  postgres-tracking:
+    image: postgres:latest
+    container_name: postgres-tracking-service
+    hostname: postgres-tracking
+    environment:
+      POSTGRES_DB: "tracking-api"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "pass"
+    ports:
+      - "5434:5432"
+
+  # Postgres для analytics-service
+  postgres-analytics:
+    image: postgres:latest
+    container_name: postgres-analytics-service
+    hostname: postgres-analytics
+    environment:
+      POSTGRES_DB: "analytics-api"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "pass"
+    ports:
+      - "5435:5432"
+
+  # Postgres для notification-service
+  postgres-notification:
+    image: postgres:latest
+    container_name: postgres-notification-service
+    hostname: postgres-notification
+    environment:
+      POSTGRES_DB: "notification-api"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "pass"
+    ports:
+      - "5436:5432"
+
+  # Prometheus container to query backend metrics
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # This is the key line for Windows
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    restart: always
+
+  # Grafana container to visualize data
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./monitoring/grafana:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: always
+    depends_on:
+      - prometheus
+
+volumes:
+  prometheus_data:

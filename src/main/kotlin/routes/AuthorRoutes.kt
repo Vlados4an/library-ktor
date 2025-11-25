@@ -1,35 +1,32 @@
 package ru.clevertec.routes
 
 import dto.author.CreateAuthorRequest
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.request.receive
-import io.ktor.server.response.respond
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.get
-import io.ktor.server.routing.post
-import io.ktor.server.routing.route
+import io.ktor.http.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import org.kodein.di.instance
 import org.kodein.di.ktor.closestDI
+import ru.clevertec.util.getPageRequest
+import ru.clevertec.validator.validatedReceive
 import service.author.AuthorService
+import util.getIntParamOrBadRequest
 
 fun Route.authorRoutes() {
     val authorService by closestDI().instance<AuthorService>()
 
     route("/api/v1/authors") {
         post {
-            val req = call.receive<CreateAuthorRequest>()
+            val req = call.validatedReceive<CreateAuthorRequest>()
             authorService.createAuthor(req)
             call.respond(HttpStatusCode.Created)
         }
         get {
-            val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 1
-            val size = call.request.queryParameters["size"]?.toIntOrNull() ?: 10
-            val authors = authorService.getAuthors(page, size)
+            val pageRequest = call.getPageRequest()
+            val authors = authorService.getAuthors(pageRequest)
             call.respond(authors)
         }
         get("/{id}/books") {
-            val id = call.parameters["id"]?.toIntOrNull()
-                ?: return@get call.respond(HttpStatusCode.BadRequest)
+            val id = call.getIntParamOrBadRequest("id")
             val books = authorService.getBooksByAuthor(id)
             call.respond(books)
         }

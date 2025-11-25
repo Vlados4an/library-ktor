@@ -1,5 +1,6 @@
 package routes
 
+import ru.clevertec.util.getPageRequest
 import dto.book.BooksFilterDto
 import ru.clevertec.dto.book.CreateBookRequest
 import ru.clevertec.dto.book.UpdateBookRequest
@@ -15,6 +16,8 @@ import io.ktor.server.routing.route
 import org.kodein.di.instance
 import org.kodein.di.ktor.closestDI
 import ru.clevertec.service.book.BookService
+import ru.clevertec.validator.validatedReceive
+import util.getIntParamOrBadRequest
 
 fun Route.bookRoutes() {
     val bookService by closestDI().instance<BookService>()
@@ -22,57 +25,51 @@ fun Route.bookRoutes() {
     route("/api/v1/books") {
 
         post {
-            val req = call.receive<CreateBookRequest>()
+            val req = call.validatedReceive<CreateBookRequest>()
             bookService.createBook(req)
             call.respond(HttpStatusCode.Created)
         }
 
         get {
-            val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 1
-            val size = call.request.queryParameters["size"]?.toIntOrNull() ?: 10
-            val books = bookService.getBooks(page, size)
+            val pageRequest = call.getPageRequest()
+            val books = bookService.getBooks(pageRequest)
             call.respond(books)
         }
 
         get("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-                ?: return@get call.respond(HttpStatusCode.BadRequest)
-            val book = bookService.getBook(id) ?: return@get call.respond(HttpStatusCode.NotFound)
+            val id = call.getIntParamOrBadRequest("id")
+            val book = bookService.getBook(id)
             call.respond(book)
         }
 
         get("/isbn/{isbn}") {
             val isbn = call.parameters["isbn"] ?: return@get call.respond(HttpStatusCode.BadRequest)
-            val book = bookService.getBookByIsbn(isbn) ?: return@get call.respond(HttpStatusCode.NotFound)
+            val book = bookService.getBookByIsbn(isbn)
             call.respond(book)
         }
 
         put("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-                ?: return@put call.respond(HttpStatusCode.BadRequest)
-            val req = call.receive<UpdateBookRequest>()
+            val id = call.getIntParamOrBadRequest("id")
+            val req = call.validatedReceive<UpdateBookRequest>()
             bookService.updateBook(id, req)
             call.respond(HttpStatusCode.OK)
         }
 
         delete("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-                ?: return@delete call.respond(HttpStatusCode.BadRequest)
-            if (bookService.deleteBook(id)) call.respond(HttpStatusCode.NoContent)
-            else call.respond(HttpStatusCode.NotFound)
+            val id = call.getIntParamOrBadRequest("id")
+            bookService.deleteBook(id)
+            call.respond(HttpStatusCode.NoContent)
         }
 
         get("/search") {
-            val filter = call.receive<BooksFilterDto>()
-            val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 1
-            val size = call.request.queryParameters["size"]?.toIntOrNull() ?: 10
-            val books = bookService.searchBooks(filter, page, size)
+            val filter = call.validatedReceive<BooksFilterDto>()
+            val pageRequest = call.getPageRequest()
+            val books = bookService.searchBooks(filter, pageRequest)
             call.respond(books)
         }
 
         post("/{id}/cover") {
-            val id = call.parameters["id"]?.toIntOrNull()
-                ?: return@post call.respond(HttpStatusCode.BadRequest)
+            val id = call.getIntParamOrBadRequest("id")
             val url = call.receive<String>()
             bookService.uploadCover(id, url)
                 ?: return@post call.respond(HttpStatusCode.NotFound)
@@ -80,8 +77,7 @@ fun Route.bookRoutes() {
         }
 
         get("/{id}/recommendations") {
-            val id = call.parameters["id"]?.toIntOrNull()
-                ?: return@get call.respond(HttpStatusCode.BadRequest)
+            val id = call.getIntParamOrBadRequest("id")
             val recs = bookService.getRecommendations(id)
             call.respond(recs)
         }

@@ -1,6 +1,7 @@
 package ru.clevertec.repository.author
 
 import dto.author.AuthorResponse
+import dto.page.PageRequest
 import mapper.AuthorMapper
 import model.entity.AuthorEntity
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -11,7 +12,10 @@ class AuthorRepositoryImpl : AuthorRepository {
         AuthorEntity.new { author(this) }
     }
 
-    override fun findAll(offset: Int, limit: Int): List<AuthorResponse> = transaction {
-        AuthorEntity.all().limit(limit).offset(offset.toLong()).toList().map(AuthorMapper::toResponse)
+    override fun findAll(pageRequest: PageRequest): Pair<List<AuthorResponse>, Long> = transaction {
+        val total = AuthorEntity.all().count()
+        val authors = AuthorEntity.all().limit(pageRequest.size).offset(pageRequest.offset)
+            .map(AuthorMapper::toResponse)
+        authors to total
     }
 }

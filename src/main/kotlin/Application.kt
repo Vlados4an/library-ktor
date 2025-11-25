@@ -6,6 +6,7 @@ import io.ktor.server.application.*
 import ru.clevertec.config.configureDependencies
 import ru.clevertec.config.configureExceptions
 import ru.clevertec.config.configureLiquibase
+import ru.clevertec.config.configureMetrics
 import ru.clevertec.config.configureRouting
 
 fun main(args: Array<String>) {
@@ -16,6 +17,7 @@ fun Application.module() {
     configureDatabase()
     configureLiquibase()
     configureDependencies()
+    configureMetrics()
     configureRouting()
     configureExceptions()
     configureSerialization()

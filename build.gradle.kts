@@ -17,7 +17,11 @@ application {
 }
 
 dependencies {
+    implementation("io.ktor:ktor-server-metrics-micrometer")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.15.5")
     implementation("io.ktor:ktor-server-core")
+    implementation("io.ktor:ktor-server-auth")
+    implementation("io.ktor:ktor-server-auth-jwt")
     implementation("io.ktor:ktor-server-content-negotiation")
     implementation("io.ktor:ktor-serialization-kotlinx-json")
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
@@ -26,12 +30,13 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("org.postgresql:postgresql:$postgres_version")
     implementation("org.liquibase:liquibase-core:5.0.0")
-    //implementation("io.github.flaxoos:ktor-server-kafka:2.2.1")
+    implementation("org.apache.kafka:kafka-clients:3.7.0")
     implementation("com.zaxxer:HikariCP:7.0.2")
     implementation("io.ktor:ktor-client-core")
     implementation("io.ktor:ktor-server-status-pages")
     implementation("org.kodein.di:kodein-di:7.28.0")
     implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:7.28.0")
+    implementation("org.valiktor:valiktor-core:0.12.0")
     implementation("io.ktor:ktor-server-netty")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-server-config-yaml")

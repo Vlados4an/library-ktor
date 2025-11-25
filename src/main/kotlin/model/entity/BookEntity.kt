@@ -18,7 +18,6 @@ class BookEntity(id: EntityID<Int>) : IntEntity(id) {
     var language by Books.language
     var coverUrl by Books.coverUrl
     var isDeleted by Books.isDeleted
-    var createdAt by Books.createdAt
-    var updatedAt by Books.updatedAt
-    var year by Books.year
+    val createdAt by Books.createdAt
+    val updatedAt by Books.updatedAt
 }

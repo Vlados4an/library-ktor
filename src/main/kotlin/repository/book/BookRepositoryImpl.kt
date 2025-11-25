@@ -1,6 +1,7 @@
 package ru.clevertec.repository.book
 
 import dto.book.BooksFilterDto
+import dto.page.PageRequest
 import mapper.BookMapper
 import model.entity.BookEntity
 import org.jetbrains.exposed.sql.Op
@@ -16,8 +17,11 @@ class BookRepositoryImpl : BookRepository {
         BookEntity.Companion.new { book(this) }
     }
 
-    override fun findAll(offset: Int, limit: Int): List<BookResponse> = transaction {
-        BookEntity.all().limit(limit).offset(offset.toLong()).map(BookMapper::toResponse)
+    override fun findAll(pageRequest: PageRequest): Pair<List<BookResponse>, Long> = transaction {
+        val total = BookEntity.all().count()
+        val books =  BookEntity.all().limit(pageRequest.size).offset(pageRequest.offset)
+            .map(BookMapper::toResponse)
+        books to total
     }
 
     override fun findById(id: Int): BookResponse? = transaction {
@@ -46,7 +50,7 @@ class BookRepositoryImpl : BookRepository {
         } != null
     }
 
-    override fun search(filter: BooksFilterDto, offset: Int, limit: Int): List<BookResponse> = transaction {
+    override fun search(filter: BooksFilterDto, pageRequest: PageRequest): List<BookResponse> = transaction {
         val conditions = mutableListOf<SqlExpressionBuilder.() -> Op<Boolean>>()
 
         filter.title?.let { t ->
@@ -61,12 +65,6 @@ class BookRepositoryImpl : BookRepository {
         filter.language?.let { l ->
             conditions += { Books.language eq l }
         }
-        filter.yearFrom?.let { yf ->
-            conditions += { Books.year greaterEq yf }
-        }
-        filter.yearTo?.let { yt ->
-            conditions += { Books.year lessEq yt }
-        }
         filter.hasCover?.let { hc ->
             conditions += { if (hc) Books.coverUrl.isNotNull() else Books.coverUrl.isNull() }
         }
@@ -76,6 +74,6 @@ class BookRepositoryImpl : BookRepository {
         } else {
             BookEntity.find { conditions.map { it(SqlExpressionBuilder) }.reduce { acc, op -> acc and op } }
         }
-        query.limit(limit).offset(offset.toLong()).toList().map(BookMapper::toResponse)
+        query.limit(pageRequest.size).offset(pageRequest.offset).toList().map(BookMapper::toResponse)
     }
 }

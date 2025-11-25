@@ -2,6 +2,8 @@ package ru.clevertec.service.genre
 
 import dto.genre.CreateGenreRequest
 import dto.genre.GenreResponse
+import dto.page.PageRequest
+import dto.page.PageResponse
 import mapper.GenreMapper
 import repository.genre.GenreRepository
 import ru.clevertec.dto.book.BookResponse
@@ -17,9 +19,14 @@ class GenreServiceImpl(
         genreRepository.create(GenreMapper.toEntity(req))
     }
 
-    override fun getGenres(page: Int, size: Int): List<GenreResponse> {
-        val offset = (page - 1) * size
-        return genreRepository.findAll(offset, size)
+    override fun getGenres(pageRequest: PageRequest): PageResponse<GenreResponse> {
+        val (genres, total)  = genreRepository.findAll(pageRequest)
+        return PageResponse(
+            content = genres,
+            page = pageRequest.page,
+            size = pageRequest.size,
+            totalElements = total
+        )
     }
 
     override fun getBooksByGenre(genreId: Int): List<BookResponse> {
